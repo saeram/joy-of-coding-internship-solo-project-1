@@ -3,6 +3,9 @@ import { useGlobalState } from "@/app/context/globalProvider";
 import React from "react";
 import styled from "styled-components";
 import CreateContent from "../Modals/CreateContent";
+import TaskItem from "../TaskItem/TaskItem";
+import { Button } from "@/components/ui/button";
+import { PlusIcon } from "@radix-ui/react-icons";
 
 
 interface Props {
@@ -12,24 +15,26 @@ interface Props {
 const Tasks = ({ title, tasks }: Props) => {
   const { theme } = useGlobalState();
 
-  return <TaskStyled theme={theme}>
+  return (
+  <TaskStyled theme={theme}>
     <h1>{title}</h1>
     <div className="tasks grid">
       {tasks.map((task) => (
-        <div className="task" key={task._id}>
-          <h2>{task.title}</h2>
-          <p>{task.description}</p>
-          <p>{task.date}</p>
-          <p>{task.completed}</p>
-          <p>{task.important}</p>
-          </div>
-
-
-
-
+       <TaskItem key={task.id}
+       title={task.title}
+       description={task.description}
+       date={task.date}
+       isCompleted={task.isCompleted}
+       id={task.id}
+       />
       ))}
+      <Button className="create-task">
+        <PlusIcon />
+        Add New Task
+              </Button>
     </div>
-\    </TaskStyled>;
+    </TaskStyled>
+  );
 };
 
 const TaskStyled = styled.main`

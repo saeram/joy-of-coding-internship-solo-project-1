@@ -2,12 +2,14 @@
 
 import React, { createContext, useState, useContext } from "react";
 import themes from "./themes";
-
+import toast from "react-hot-toast";
+import axios from "axios";
 export const GlobalContext = createContext()
 export const GlobalUpdateContext = createContext()
 
 
 export const GlobalProvider = ({ children }) => {
+
   const [selectedTheme, setselectedTheme] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const theme = themes[selectedTheme];
@@ -17,13 +19,39 @@ export const GlobalProvider = ({ children }) => {
     setIsLoading(true);
     try {
       const res = await axios.get("/api/tasks");
-      console.log(res.data);
       setTasks(res.data);
       setIsLoading(false);
     } catch (error) {
       toast.error("Something went wrong")
     }
   };
+
+const deleteTask = async (id) => {
+  try {
+    const res = await axios.delete(`/api/tasks/${id}`);
+    toast.success("Task deleted");
+    allTasks();
+  } catch (error) {
+    console.log(error)
+    toast.error("Something went wrong");
+  }
+};
+
+const updateTask = async (task) => {
+  try {
+    const res = await axios.put(`/api/tasks`, task);
+    toast.success("Task updated");
+    allTasks();
+  } catch (error) {
+    console.log(error);
+    toast.error("Something went wrong");
+    
+  }
+
+}
+const completedTasks = tasks.filter((task) => task.isCompleted === true);
+const importantTasks = tasks.filter((task) => task.isImportant === true);
+const incompleteTasks = tasks.filter((task) => task.isCompleted === false);
 
   React.useEffect(() => {
     allTasks();
@@ -34,6 +62,12 @@ export const GlobalProvider = ({ children }) => {
          value={{
           theme,
           tasks,
+          deleteTask,
+          isLoading,
+          completedTasks,
+          importantTasks,
+          incompleteTasks,
+          updateTask,
          }}>
         <GlobalUpdateContext.Provider value={{}}>
         {children}

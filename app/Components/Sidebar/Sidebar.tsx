@@ -8,20 +8,28 @@ import menu from "./menu";
 import classnames from 'classnames'
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import SignOut from "../Button/SignOut";
+import { useUser } from "@clerk/nextjs";
 
 const Sidebar = () => {
     const currentPath = usePathname();
 
   const { theme } = useGlobalState();
+  const { user } = useUser();
+  const { firstName, lastName, imageUrl } = user || { 
+    firstName: "",
+     lastName: "",
+     imageUrl: "", 
+    };
+
   return <SidebarStyled theme={theme}>
     <div className="profile">
         <div className="profile-overlay"></div>
         <div className="image">
-        <Image width={70} height={70} src="" alt="profile" />
+        <Image width={70} height={70} src={imageUrl} alt="profile" />
         </div>
-        <h1>
-            <span>Saeram</span>
-            <span>Evensen</span>
+        <h1 className="capitalize">
+            {firstName} {lastName}
         </h1>
     </div>
     <ul className="nav-items">
@@ -38,6 +46,7 @@ const Sidebar = () => {
             );
           })}
     </ul>
+    <SignOut />
     </SidebarStyled>;
 };
 const SidebarStyled = styled.nav`
