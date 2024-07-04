@@ -6,17 +6,20 @@ import { Button } from "@/components/ui/button";
 import styled from "styled-components";
 import axios from "axios";
 import { useGlobalState } from "@/app/context/globalProvider";
+import { Task } from "@prisma/client";
+import { useRouter } from "next/navigation";
 
 
-
-const CreateContent = () => {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [date, setDate] = useState("");
+const EditContent = ({ task }: { task: Task }) => {
+  const router = useRouter();
+  const [title, setTitle] = useState(task.title);
+  const [description, setDescription] = useState(String(task.description));
+  const [date, setDate] = useState(task.date);
   const [completed, setCompleted] = useState(false);
   const [important, setImportant] = useState(false);
 
-  const { theme, allTasks, closeModal } = useGlobalState();
+  const { theme, allTasks, closeModal, openModal } = useGlobalState();
+  openModal;
 
   const handleChange = (name: string) => (e: any) => {
     switch (name) {
@@ -40,36 +43,38 @@ const CreateContent = () => {
     }
   };
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = (id: string) => async (e: any) => {
+  
     e.preventDefault();
 
-    const task = {
-      title,
-      description,
-      date,
-      completed,
-      important,
-    };
+      const task = {
+        title,
+        description,
+        date,
+        completed,
+        important,
+      };
 
     try {
-      const res = await axios.post("/api/tasks", task);
-
-      if (res.data.error) {
-        toast.error(res.data.error);
-      }
+      const res = await axios.put(`/api/tasks/${id}`, task);
+      closeModal;
       allTasks();
-      closeModal();
-        toast.success("Task created successfully.");
-        
+      router.push("/");
+      toast.success("Task updated");
+
+
     } catch (error) {
-      toast.error("Something went wrong.");
       console.log(error);
+      toast.error("Something went wrong");
+      
     }
-  };
+  
+  }
 
   return (
     <>
-    <CreateContentStyled  onSubmit={handleSubmit} theme={theme}>
+    <CreateContentStyled  onSubmit={
+        handleSubmit(task.id)} theme={theme}>
       <h1>Create a Task</h1>
       <div className="input-control">
         <label htmlFor="title">Title</label>
@@ -124,7 +129,7 @@ const CreateContent = () => {
         />
       </div>
       <div className="flex justify-end">
-            <Button type="submit" className="bg-slate-500 p-6 rounded-xl hover:bg-slate-400">Create Task</Button>
+            <Button type="submit" className="bg-slate-500 p-6 rounded-xl hover:bg-slate-400">Update Task</Button>
             </div>
     </CreateContentStyled>
     
@@ -188,4 +193,4 @@ const CreateContentStyled = styled.form`
   }
 `;
 
-export default CreateContent;
+export default EditContent;

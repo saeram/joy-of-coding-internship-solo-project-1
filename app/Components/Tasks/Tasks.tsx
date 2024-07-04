@@ -6,6 +6,7 @@ import CreateContent from "../Modals/CreateContent";
 import TaskItem from "../TaskItem/TaskItem";
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "@radix-ui/react-icons";
+import Modal from "../Modals/Modal";
 
 
 interface Props {
@@ -13,10 +14,11 @@ interface Props {
   tasks: any[];
 }
 const Tasks = ({ title, tasks }: Props) => {
-  const { theme } = useGlobalState();
+  const { theme, openModal, modal } = useGlobalState();
 
   return (
   <TaskStyled theme={theme}>
+    {modal && <Modal content={<CreateContent />} />}
     <h1>{title}</h1>
     <div className="tasks grid">
       {tasks.map((task) => (
@@ -28,7 +30,7 @@ const Tasks = ({ title, tasks }: Props) => {
        id={task.id}
        />
       ))}
-      <Button className="create-task">
+      <Button className="create-task" onClick={openModal}>
         <PlusIcon />
         Add New Task
               </Button>

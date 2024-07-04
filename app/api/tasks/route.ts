@@ -77,8 +77,8 @@ try {
             id,
         },
         data: {
-            isCompleted
-        }
+            isCompleted,
+        },
     });
     return NextResponse.json(task);
     } catch (error) {

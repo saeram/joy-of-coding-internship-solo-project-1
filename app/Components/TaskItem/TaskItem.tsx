@@ -5,6 +5,10 @@ import React from 'react';
 import formatDate from "@/app/utils/formatDate";
 import { useGlobalState } from '@/app/context/globalProvider';
 import styled from 'styled-components';
+import CreateContent from '../Modals/CreateContent';
+import Modal from '../Modals/Modal';
+import EditContent from '../Modals/EditContent';
+import Link from 'next/link';
 
 interface Props {
     title: string;
@@ -16,8 +20,8 @@ interface Props {
 
 const TaskItem = ({ title, description, date, isCompleted, id }: Props) => {
 
-    const { theme, deleteTask, updateTask } = useGlobalState();
-
+    const { theme, deleteTask, toggleTask, openModal, modal } = useGlobalState();
+ 
   return (
 
     <TaskItemStyled theme={theme}>
@@ -25,20 +29,32 @@ const TaskItem = ({ title, description, date, isCompleted, id }: Props) => {
       <p>{description}</p>
       <p className="date">{formatDate(date)}</p>
       <div className="task-footer">
-        {isCompleted?  <Button className="completed" onClick={() => {
+        {isCompleted?  (
+          <Button className="completed" 
+          onClick={() => {
           const task = {
             id,
             isCompleted: !isCompleted,
           };
-          updateTask(task);
-        }}>Completed</Button> : <Button className="incomplete" onClick={() => {
+          toggleTask(task);
+        }}
+        >Completed
+        </Button>
+         ) : (
+         <Button 
+         className="incomplete"
+          onClick={() => {
           const task = {
             id,
             isCompleted: !isCompleted,
           };
-          updateTask(task);
-        }}>Incomplete</Button>}
-       <Button className="edit"><Pencil1Icon /></Button>
+          toggleTask(task);
+        }}
+        >
+          Incomplete
+          </Button>
+          )}
+       <Link href={`/${id}`}><Button className="edit"><Pencil1Icon /></Button></Link>
        <Button className="delete" onClick={() => {
         deleteTask(id)
        }}><TrashIcon /></Button>
