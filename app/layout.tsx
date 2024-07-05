@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Roboto_Mono, Nunito } from "next/font/google";
 import "./globals.css";
 import Sidebar from "./Components/Sidebar/Sidebar";
 import GlobalStyleProvider from "./providers/GlobalStyleProvider";
 import ContextProvider from "./providers/ContextProvider";
 import { ClerkProvider } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
+import '@radix-ui/themes/styles.css';
 
-const inter = Inter({ subsets: ["latin"] });
+
+const nunito = Nunito({ subsets: ["latin"], display: "swap" });
+const roboto_mono = Roboto_Mono({ subsets: ["latin"], display: "swap" });
+
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -24,11 +28,11 @@ export default function RootLayout({
   return (
     <ClerkProvider>
     <html lang="en">
-      <body className={inter.className}>
+      <body className={nunito.className}>
         <ContextProvider>
         <GlobalStyleProvider>
         {userId && <Sidebar />}
-        <div className="w-full">
+        <div className={`w-full ${roboto_mono.className}`}>
         {children}
         </div>
         </GlobalStyleProvider>

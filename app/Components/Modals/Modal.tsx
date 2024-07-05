@@ -10,9 +10,8 @@ interface Props {
 
 const Modal = ({ content }: Props) => {
   const { closeModal } = useGlobalState();
-  const { theme } = useGlobalState();
   return (
-    <ModalSytled theme={theme}>
+    <ModalSytled>
         <div className="modal-overlay" onClick={closeModal}></div>
         <div className="modal-content">{content}</div>
     </ModalSytled>
@@ -49,7 +48,7 @@ const ModalSytled = styled.div`
     width: 100%;
     z-index: 100;
 
-    background-color: ${(props) => props.theme.colorBg2};
+    background-color: #2c2e2c;
     box-shadow: 0 0 1rem rgba(0, 0, 0, 0.3);
 
     @media screen and (max-width: 450px) {

@@ -6,7 +6,7 @@ import Tasks from '../Components/Tasks/Tasks';
 const page = () => {
   const { incompleteTasks } = useGlobalState();
   return (
-    <Tasks title="Incomplete Tasks" tasks={incompleteTasks} />
+    <Tasks title="In Progress" tasks={incompleteTasks} />
   )
 }
 

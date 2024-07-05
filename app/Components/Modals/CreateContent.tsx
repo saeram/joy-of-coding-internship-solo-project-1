@@ -6,17 +6,21 @@ import { Button } from "@/components/ui/button";
 import styled from "styled-components";
 import axios from "axios";
 import { useGlobalState } from "@/app/context/globalProvider";
+import { Task } from "@prisma/client";
+import { useRouter } from "next/navigation";
 
+const CreateContent = ({ task }: { task?: Task }) => {
+  const router = useRouter();
 
-
-const CreateContent = () => {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [date, setDate] = useState("");
+  const [title, setTitle] = useState(task ? task.title : "");
+  const [description, setDescription] = useState(
+    task ? String(task.description) : ""
+  );
+  const [date, setDate] = useState(task ? task.date : "");
   const [completed, setCompleted] = useState(false);
   const [important, setImportant] = useState(false);
 
-  const { theme, allTasks, closeModal } = useGlobalState();
+  const { allTasks, closeModal } = useGlobalState();
 
   const handleChange = (name: string) => (e: any) => {
     switch (name) {
@@ -59,76 +63,101 @@ const CreateContent = () => {
       }
       allTasks();
       closeModal();
-        toast.success("Task created successfully.");
-        
+      toast.success("Task created successfully.");
     } catch (error) {
       toast.error("Something went wrong.");
       console.log(error);
     }
   };
 
+  const handleEdit = (id: string) => async (e: any) => {
+    e.preventDefault();
+
+    const task = {
+      title,
+      description,
+      date,
+      completed,
+      important,
+    };
+
+    try {
+      const res = await axios.put(`/api/tasks/${id}`, task);
+      closeModal;
+      allTasks();
+      router.push("/");
+      toast.success("Task updated");
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong");
+    }
+  };
+
   return (
     <>
-    <CreateContentStyled  onSubmit={handleSubmit} theme={theme}>
-      <h1>Create a Task</h1>
-      <div className="input-control">
-        <label htmlFor="title">Title</label>
-        <input
-          type="text"
-          id="title"
-          value={title}
-          name="title"
-          onChange={handleChange("title")}
-          placeholder="title.."
-        />
-      </div>
-      <div className="input-control">
-        <label htmlFor="description">Description</label>
-        <textarea
-          value={description}
-          onChange={handleChange("description")}
-          name="description"
-          id="description"
-          rows={4}
-          placeholder="description.."></textarea>
-          
-      </div>
-      <div className="input-control">
-        <label htmlFor="date">Date</label>
-        <input
-          value={date}
-          onChange={handleChange("date")}
-          type="date"
-          name="date"
-          id="date"
-        />
-      </div>
-      <div className="input-control toggler">
-        <label htmlFor="completed">Toggle Completed</label>
-        <input
-          value={completed.toString()}
-          onChange={handleChange("completed")}
-          type="checkbox"
-          name="completed"
-          id="completed"
-        />
-      </div>
-      <div className="input-control toggler">
-        <label htmlFor="important">Toggle Important</label>
-        <input
-          value={important.toString()}
-          onChange={handleChange("important")}
-          type="checkbox"
-          name="important"
-          id="important"
-        />
-      </div>
-      <div className="flex justify-end">
-            <Button type="submit" className="bg-slate-500 p-6 rounded-xl hover:bg-slate-400">Create Task</Button>
-            </div>
-    </CreateContentStyled>
-    
-            </>
+      <CreateContentStyled
+        onSubmit={task ? handleEdit(task.id) : handleSubmit}>
+        <h1>{task ? "Update the task" : "Create a Task"}</h1>
+        <div className="input-control">
+          <label htmlFor="title">Title</label>
+          <input
+            type="text"
+            id="title"
+            value={title}
+            name="title"
+            onChange={handleChange("title")}
+            placeholder="title.."
+          />
+        </div>
+        <div className="input-control">
+          <label htmlFor="description">Description</label>
+          <textarea
+            value={description}
+            onChange={handleChange("description")}
+            name="description"
+            id="description"
+            rows={4}
+            placeholder="description.."></textarea>
+        </div>
+        <div className="input-control">
+          <label htmlFor="date">Date</label>
+          <input
+            value={date}
+            onChange={handleChange("date")}
+            type="date"
+            name="date"
+            id="date"
+          />
+        </div>
+        <div className="input-control toggler">
+          <label htmlFor="completed">Toggle Completed</label>
+          <input
+            value={completed.toString()}
+            onChange={handleChange("completed")}
+            type="checkbox"
+            name="completed"
+            id="completed"
+          />
+        </div>
+        <div className="input-control toggler">
+          <label htmlFor="important">Toggle Important</label>
+          <input
+            value={important.toString()}
+            onChange={handleChange("important")}
+            type="checkbox"
+            name="important"
+            id="important"
+          />
+        </div>
+        <div className="flex justify-end">
+          <Button
+            type="submit"
+            className="text-slate-50 bg-[#e09a6c] p-6 rounded-xl hover:bg-slate-400">
+            {task ? "Update Task" : "Create Task"}
+          </Button>
+        </div>
+      </CreateContentStyled>
+    </>
   );
 };
 const CreateContentStyled = styled.form`
@@ -137,7 +166,7 @@ const CreateContentStyled = styled.form`
     font-weight: 600;
   }
 
-  color: ${(props) => props.theme.colorGrey1};
+  color: #f8fafc;
 
   .input-control {
     position: relative;
@@ -152,10 +181,6 @@ const CreateContentStyled = styled.form`
       margin-bottom: 0.5rem;
       display: inline-block;
       font-size: clamp(0.9rem, 5vw, 1.2rem);
-
-      span {
-        color: ${(props) => props.theme.colorGrey3};
-      }
     }
 
     input,
@@ -164,12 +189,11 @@ const CreateContentStyled = styled.form`
       padding: 1rem;
 
       resize: none;
-      background-color: ${(props) => props.theme.colorGreyDark};
-      color: ${(props) => props.theme.colorGrey2};
+      background-color: #0a0a0a;
+      color: #dee3e2;
       border-radius: 0.5rem;
     }
   }
-
 
   .toggler {
     display: flex;

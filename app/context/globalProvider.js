@@ -1,7 +1,6 @@
 'use client';
 
 import React, { createContext, useState, useContext } from "react";
-import themes from "./themes";
 import toast from "react-hot-toast";
 import axios from "axios";
 export const GlobalContext = createContext()
@@ -10,13 +9,10 @@ export const GlobalUpdateContext = createContext()
 
 export const GlobalProvider = ({ children }) => {
 
-  const [selectedTheme, setselectedTheme] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [modal, setModal] = useState(false);
   
   const [tasks, setTasks] = useState([])
-
-  const theme = themes[selectedTheme];
 
   const openModal = () => {
     setModal(true);
@@ -64,18 +60,6 @@ const toggleTask = async (task) => {
 
 }
 
-const updateTask = async (id) => {
-  try {
-    const res = await axios.put(`/api/tasks/${id}`);
-    toast.success("Task updated");
-    allTasks();
-  } catch (error) {
-    console.log(error);
-    toast.error("Something went wrong");
-    
-  }
-
-}
 const completedTasks = tasks.filter((task) => task.isCompleted === true);
 const importantTasks = tasks.filter((task) => task.isImportant === true);
 const incompleteTasks = tasks.filter((task) => task.isCompleted === false);
@@ -87,7 +71,6 @@ const incompleteTasks = tasks.filter((task) => task.isCompleted === false);
     return (
         <GlobalContext.Provider
          value={{
-          theme,
           tasks,
           deleteTask,
           isLoading,
@@ -99,7 +82,6 @@ const incompleteTasks = tasks.filter((task) => task.isCompleted === false);
           openModal,
           closeModal,
           allTasks,
-          updateTask,
          }}>
         <GlobalUpdateContext.Provider value={{}}>
         {children}
